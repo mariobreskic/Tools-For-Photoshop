@@ -1,24 +1,27 @@
-﻿// increase flow value by 5
-// shoutout to c.pfaffenbichler on the Adobe community forums, adapted from his own script
-var ref = new ActionReference();
-ref.putEnumerated(charIDToTypeID("capp"), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
-var applicationDesc = executeActionGet(ref);
-var theTool = typeIDToStringID(applicationDesc.getEnumerationType(stringIDToTypeID("tool")));
-if (theTool == "paintbrushTool") {
-    var theCurrentToolOptions = applicationDesc.getObjectValue(stringIDToTypeID("currentToolOptions"));
-    var theFlow = theCurrentToolOptions.getInteger(stringIDToTypeID("flow"));
-    setBrushToolFlow(Math.min(100, theFlow + 5));
-};
+var s2t = stringIDToTypeID;
+var c2t = charIDToTypeID;
 
-function setBrushToolFlow(theFlow) {
-    (r = new ActionReference()).putProperty(stringIDToTypeID('property'), p = stringIDToTypeID('currentToolOptions'));
-    r.putEnumerated(stringIDToTypeID('application'), stringIDToTypeID('ordinal'), stringIDToTypeID('targetEnum'));
-    var tool = executeActionGet(r).getObjectValue(p);
-    if (tool.hasKey(stringIDToTypeID('brush'))) {
-        tool.putUnitDouble(stringIDToTypeID("flow"), stringIDToTypeID("percentUnit"), theFlow);
-        (r = new ActionReference()).putClass(stringIDToTypeID(theTool));
-        (d = new ActionDescriptor()).putReference(stringIDToTypeID("target"), r);
-        d.putObject(stringIDToTypeID("to"), stringIDToTypeID("target"), tool);
-        executeAction(stringIDToTypeID("set"), d, DialogModes.NO);
-    };
-};
+var ref = new ActionReference();
+ref.putEnumerated(c2t("capp"), c2t("Ordn"), c2t("Trgt"));
+var appDesc = executeActionGet(ref);
+
+var currentTool = typeIDToStringID(appDesc.getEnumerationType(s2t("tool")));
+
+if (currentTool === "paintbrushTool") {
+    var toolOpts = appDesc.getObjectValue(s2t("currentToolOptions"));
+    var currentFlow = toolOpts.getInteger(s2t("flow"));
+
+    if (currentFlow < 100) {
+        var newFlow = Math.min(100, currentFlow + 5);
+        toolOpts.putUnitDouble(s2t("flow"), s2t("percentUnit"), newFlow);
+
+        var setRef = new ActionReference();
+        setRef.putClass(s2t(currentTool));
+
+        var desc = new ActionDescriptor();
+        desc.putReference(s2t("target"), setRef);
+        desc.putObject(s2t("to"), s2t("target"), toolOpts);
+
+        executeAction(s2t("set"), desc, DialogModes.NO);
+    }
+}
