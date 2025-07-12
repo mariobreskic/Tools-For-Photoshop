@@ -9,3 +9,4 @@ If you want to use them yourself, add them to your Script folder inside your Pho
 Win: C:\Program Files\Adobe\Adobe Photoshop [version]\Presets\Scripts\
 Mac: /Applications/Adobe Photoshop [Version]/Presets/Scripts/
 
+Or test them out using the Adobe ExtendScript Toolkit.
